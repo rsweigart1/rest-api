@@ -47,11 +47,13 @@ func YearMiddleware(h http.Handler) http.Handler {
 
 func GetPctResistYear(w http.ResponseWriter, r *http.Request) {
 	db := db.OpenConnection()
-	query := r.URL.Query()
-	param := query.Get("eventyearid")
+	param1 := r.URL.Query().Get("eventyearid")
+	param1s := r.URL.Query()["param1"]
+	// param := r.URL.Query().Get("eventyearid")
+	// param2 := r.URL.Query()["state"]
 	// eventyearid := chi.URLParam(r, "eventyearid")
 
-	rows, err := db.Query("SELECT * FROM antibiotic_resistance WHERE eventyearid=$1", param)
+	rows, err := db.Query("SELECT * FROM antibiotic_resistance")
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -62,8 +64,14 @@ func GetPctResistYear(w http.ResponseWriter, r *http.Request) {
 	for rows.Next() {
 		var artext models.AntibioticResistance
 		rows.Scan(&artext.EventYearID, &artext.State, &artext.Pct_Resist)
-		// if eventyearid == artext.EventYearID {
-		arCube = append(arCube, artext)
+		if param1 == artext.EventYearID && len(param1s) > 0 {
+			arCube = append(arCube, artext)
+		}
+		// if param1 == artext.EventYearID {
+		// 	arCube = append(arCube, artext)
+		// } else if param2 == artext.State {
+		// 	arCube = append(arCube, artext)
+		// }
 	}
 
 	arBytes, _ := json.MarshalIndent(arCube, "", "\t")
