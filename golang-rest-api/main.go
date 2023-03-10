@@ -22,7 +22,7 @@ func main() {
 
 	// Welcome path
 	r.Get("/", func(w http.ResponseWriter, r *http.Request) {
-		w.Write([]byte("Welcome to the API Server. \n /api/ar = all ar data \n /api/ar/{eventyearID} = all ar data by year"))
+		w.Write([]byte("Welcome to the API Server. \n /api/ar = all ar data \n /api/ar/year/{eventyearID} = all ar data by year"))
 	})
 
 	// Routes
@@ -33,7 +33,7 @@ func main() {
 
 		// AR year path
 		r.Route("/ar/year", func(r chi.Router) {
-			// r.Use(controller.YearMiddleware)
+			r.Use(controller.YearMiddleware)
 			r.Get("/", getHandler)
 		})
 
